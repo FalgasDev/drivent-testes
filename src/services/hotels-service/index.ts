@@ -18,9 +18,20 @@ async function getAllHotels() {
   return await hotelsRepository.getAllHotels();
 }
 
+async function getAllRoomsByHotelId(hotelId: number) {
+  const rooms = await hotelsRepository.getAllRoomsByHotelId(hotelId);
+
+  if (rooms.length === 0) {
+    throw notFoundError();
+  }
+
+  return rooms;
+}
+
 const hotelsService = {
   checkBusinessRules,
   getAllHotels,
+  getAllRoomsByHotelId,
 };
 
 export default hotelsService;
