@@ -5,13 +5,12 @@ import ticketsRepository from '@/repositories/tickets-repository';
 
 async function checkBusinessRules(userId: number) {
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
-  const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
+  if (!enrollment) throw notFoundError();
 
-  if (!enrollment) {
-    throw notFoundError();
-  } else if (!ticket) {
-    throw notFoundError();
-  } else if (ticket.status === 'RESERVED' || ticket.TicketType.isRemote || !ticket.TicketType.includesHotel) {
+  const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
+  if (!ticket) throw notFoundError();
+
+  if (ticket.status === 'RESERVED' || ticket.TicketType.isRemote || !ticket.TicketType.includesHotel) {
     throw paymentRequired();
   }
 }
@@ -29,7 +28,7 @@ async function getAllHotels() {
 async function getAllRoomsByHotelId(hotelId: number) {
   const rooms = await hotelsRepository.getAllRoomsByHotelId(hotelId);
 
-  if (rooms.length === 0) {
+  if (!rooms) {
     throw notFoundError();
   }
 
