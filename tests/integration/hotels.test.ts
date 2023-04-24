@@ -12,6 +12,7 @@ import {
   createTicketTypeWithHotel,
   createHotel,
   createRoom,
+  deleteHotelsAndRooms,
 } from '../factories';
 import { prisma } from '@/config';
 import app, { init } from '@/app';
@@ -94,8 +95,7 @@ describe('GET: /hotels', () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeWithHotel();
       await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-      await prisma.room.deleteMany();
-      await prisma.hotel.deleteMany();
+      await deleteHotelsAndRooms();
       const response = await server.get('/hotels').set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(httpStatus.NOT_FOUND);
@@ -194,8 +194,7 @@ describe('GET: /hotels/:hotelId', () => {
       const enrollment = await createEnrollmentWithAddress(user);
       const ticketType = await createTicketTypeWithHotel();
       await createTicket(enrollment.id, ticketType.id, TicketStatus.PAID);
-      await prisma.room.deleteMany();
-      await prisma.hotel.deleteMany();
+      await deleteHotelsAndRooms();
       const response = await server.get('/hotels/1337').set('Authorization', `Bearer ${token}`);
 
       expect(response.status).toBe(httpStatus.NOT_FOUND);

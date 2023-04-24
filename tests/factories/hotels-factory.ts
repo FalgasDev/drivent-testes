@@ -19,3 +19,8 @@ export async function createRoom(hotelId: number) {
     },
   });
 }
+
+export async function deleteHotelsAndRooms() {
+  await prisma.room.deleteMany();
+  await prisma.hotel.deleteMany();
+}
