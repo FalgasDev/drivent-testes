@@ -14,7 +14,6 @@ import {
   createRoom,
   deleteHotelsAndRooms,
 } from '../factories';
-import { prisma } from '@/config';
 import app, { init } from '@/app';
 
 beforeAll(async () => {
