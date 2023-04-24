@@ -7,7 +7,9 @@ async function checkBusinessRules(userId: number) {
   const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
   const ticket = await ticketsRepository.findTicketByEnrollmentId(enrollment.id);
 
-  if (!enrollment || !ticket) {
+  if (!enrollment) {
+    throw notFoundError();
+  } else if (!ticket) {
     throw notFoundError();
   } else if (ticket.status === 'RESERVED' || ticket.TicketType.isRemote || !ticket.TicketType.includesHotel) {
     throw paymentRequired();
@@ -15,7 +17,13 @@ async function checkBusinessRules(userId: number) {
 }
 
 async function getAllHotels() {
-  return await hotelsRepository.getAllHotels();
+  const hotels = await hotelsRepository.getAllHotels();
+
+  if (hotels.length === 0) {
+    throw notFoundError();
+  }
+
+  return hotels;
 }
 
 async function getAllRoomsByHotelId(hotelId: number) {
