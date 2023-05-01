@@ -31,3 +31,19 @@ export async function createBooking(req: AuthenticatedRequest, res: Response, ne
     next(err);
   }
 }
+
+export async function changeBooking(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+  const { userId } = req;
+  const { bookingId } = req.params;
+  const { roomId } = req.body;
+
+  try {
+    const booking = await bookingsService.changeBooking(userId, Number(bookingId), roomId);
+    return res.status(httpStatus.OK).send({ bookingId: booking });
+  } catch (err) {
+    if (err.name !== 'NotFoundError' && err.name !== 'ForbiddenError') {
+      return res.status(httpStatus.BAD_REQUEST).send(err.message);
+    }
+    next(err);
+  }
+}

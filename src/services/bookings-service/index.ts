@@ -24,9 +24,9 @@ async function createBooking(userId: number, roomId: number) {
 
   if (!ticket) {
     throw forbiddenError();
-  } else if (ticket.status !== 'PAID') {
-    throw forbiddenError();
-  } else if (ticket.TicketType.isRemote || !ticket.TicketType.includesHotel) {
+  }
+
+  if (ticket.status === 'RESERVED' || ticket.TicketType.isRemote || !ticket.TicketType.includesHotel) {
     throw forbiddenError();
   }
 
@@ -45,9 +45,32 @@ async function createBooking(userId: number, roomId: number) {
   return booking.id;
 }
 
+async function changeBooking(userId: number, bookingId: number, roomId: number) {
+  const bookingsRoom = await bookingsRepository.getAllBookingsRoom(roomId);
+
+  if (!roomId || !bookingsRoom) {
+    throw notFoundError();
+  }
+
+  if (bookingsRoom.Booking.length >= bookingsRoom.capacity) {
+    throw forbiddenError();
+  }
+
+  const userBooking = await bookingsRepository.getUserBooking(userId);
+
+  if (!userBooking || userBooking.id !== bookingId) {
+    throw forbiddenError();
+  }
+
+  const booking = await bookingsRepository.changeBooking(bookingId, roomId);
+
+  return booking.id;
+}
+
 const bookingsService = {
   getUserBooking,
   createBooking,
+  changeBooking,
 };
 
 export default bookingsService;
